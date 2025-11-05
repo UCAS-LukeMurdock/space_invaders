@@ -27,6 +27,26 @@ pygame.display.set_caption("Space Invaders")
 pygame_icon = pygame.image.load('resources/ufo.png')
 pygame.display.set_icon(pygame_icon)
 
+
+class Button:
+    def __init__(self, x,y, img, scale):
+        self.x = x
+        self.y = y
+        self.img = pygame.image.load(img)
+        self.img = pygame.transform.scale(self.img, (int(self.img.get_width()*scale), int(self.img.get_height()*scale)))
+        self.rect = self.img.get_rect()
+        # self.surface = surface
+        self.scale = scale
+
+    def draw(self):
+        pos = pygame.mouse.get_pos()
+        print(pos)
+
+        if self.rect.collidepoint(pos):
+            print("Hover")
+        screen.blit(self.img, (self.x, self.y))
+
+
 class Bullet:
     def __init__(self, x=0, y=0):
         self.state = "ready"
@@ -74,7 +94,7 @@ class Enemy:
         self.x = x
         self.y = y
         self.x_change = 0.2
-        self.y_change = 20
+        self.y_change = 45
 
     def enemy_set(self):
         screen.blit(self.img, (self.x, self.y))
@@ -103,7 +123,7 @@ class Enemy:
     
 
 def create_enemies(round):
-    for i in range(round *2):
+    for i in range((round+1) *2):
         x = random.randint(0,800-64)
         y = random.randint(0,300-64)
         enemies.append(Enemy(x,y))
@@ -111,7 +131,7 @@ def create_enemies(round):
     return round
 
 
-round = 1
+round = 0
 
 player = Player(370)
 bullet = Bullet()
@@ -119,8 +139,8 @@ enemies = []
 round = create_enemies(round)
 
 game_over_font = pygame.font.Font('freesansbold.ttf', 64)
-game_over_txt = game_over_font.render(f"GAME OVER", True, (255,255,255))
-game_over = False
+game_over_txt = game_over_font.render(f"GAME OVER", True, (255,0,0))
+game_over = True
 
 
 running = True
@@ -187,6 +207,14 @@ while running:
             enemy.enemy_set()
         if bullet.state == "fire":
             bullet.shoot()
+    else:
+        screen.blit(game_over_txt, (200,250))
+        # restart_font = pygame.font.Font('freesansbold.ttf', 32)
+        # restart_txt = restart_font.render(f"RESTART", True, (255,255,255))
+        # button = Button(285,375, restart_txt, 0)
+        button = Button(350,350, 'resources/restart.png', 0.2)
+        button.draw()
+        
     player.player_set()
     
 
