@@ -32,19 +32,28 @@ class Button:
     def __init__(self, x,y, img, scale):
         self.x = x
         self.y = y
+        width = pygame.image.load(img).get_width()
+        height = pygame.image.load(img).get_height()
         self.img = pygame.image.load(img)
-        self.img = pygame.transform.scale(self.img, (int(self.img.get_width()*scale), int(self.img.get_height()*scale)))
+        self.img = pygame.transform.scale(self.img, (int(width*scale), int(height*scale)))
         self.rect = self.img.get_rect()
-        # self.surface = surface
-        self.scale = scale
+        self.rect.x = x
+        self.rect.y = y
+        self.clicked = False
 
     def draw(self):
         pos = pygame.mouse.get_pos()
-        print(pos)
-
+        action = True
         if self.rect.collidepoint(pos):
-            print("Hover")
-        screen.blit(self.img, (self.x, self.y))
+            if pygame.mouse.get_pressed()[0]==1 and self.clicked == False:
+                self.clicked = True
+                action = False
+                # print("Clicked")
+            else:
+                action = True
+
+        screen.blit(self.img, self.rect)
+        return action
 
 
 class Bullet:
@@ -65,7 +74,6 @@ class Bullet:
         if self.y <= 0:
             self.state = "ready"
 
-    
 
 # Player Class
 class Player:
@@ -140,7 +148,7 @@ round = create_enemies(round)
 
 game_over_font = pygame.font.Font('freesansbold.ttf', 64)
 game_over_txt = game_over_font.render(f"GAME OVER", True, (255,0,0))
-game_over = True
+game_over = False
 
 
 running = True
@@ -213,7 +221,9 @@ while running:
         # restart_txt = restart_font.render(f"RESTART", True, (255,255,255))
         # button = Button(285,375, restart_txt, 0)
         button = Button(350,350, 'resources/restart.png', 0.2)
-        button.draw()
+        game_over = button.draw()
+        round = 0
+        round = create_enemies(round)
         
     player.player_set()
     
